@@ -68,6 +68,17 @@ server.listen(app.get('port'), function(err, result) {
     console.log('Express server listening on port ' + app.get('port'));
 });
 
+// set up plain http server
+var http = express.createServer();
+
+// set up a route to redirect http to https
+http.get('*',function(req,res){  
+    res.redirect('https://freemarketlite.cc'+req.url)
+})
+
+// have it listen on 80
+http.listen(80);
+
 
 /**
  *routes
