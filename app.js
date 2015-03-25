@@ -1,19 +1,18 @@
 /**************************************************************
-	        	2014 FreeMarketLite
-	Designed by BTCDDev: bitcoindarkdev@gmail.com
-		 BTCD: RKYdwr66HGjtaV3GapTTXnBqJ8DRcxbMbD
-		  NxT: NXT-J698-WN8Q-XR8A-92TLD
+                        2015 FreeMarketLite
 **************************************************************/
 /**
  * Module dependencies.
  **/
 var express = require('express');
 var https = require('https');
+var http = require('http');
 var path = require('path');
 var request = require('request');
 var fs = require('fs');
 
 var app = express();
+var httpApp = express();
 
 
 var bodyParser = require('body-parser')
@@ -24,12 +23,12 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 
 // ssl cert
 var sslOptions = {
-    key: fs.readFileSync(__dirname + '/ssl/freemarketlite.key'),
-    cert: fs.readFileSync(__dirname + '/ssl/freemarketlite_com.crt'),
+    key: fs.readFileSync(__dirname + '/../ssl/freemarketlite.key'),
+    cert: fs.readFileSync(__dirname + '/../ssl/freemarketlite_cc.crt'),
     ca: [
-        fs.readFileSync(__dirname + '/ssl/AddTrustExternalCARoot.crt'),
-        fs.readFileSync(__dirname + '/ssl/COMODORSAAddTrustCA.crt'),
-        fs.readFileSync(__dirname + '/ssl/COMODORSADomainValidationSecureServerCA.crt')
+        fs.readFileSync(__dirname + '/../ssl/AddTrustExternalCARoot.crt'),
+        fs.readFileSync(__dirname + '/../ssl/COMODORSAAddTrustCA.crt'),
+        fs.readFileSync(__dirname + '/../ssl/COMODORSADomainValidationSecureServerCA.crt')
     ],
     requestCert: true,
     rejectUnauthorized: false
@@ -47,6 +46,16 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+
+// all environments
+httpApp.set('port', process.env.PORT || 80); //std http port
+httpApp.use(express.favicon());
+httpApp.use(express.logger('dev'));
+httpApp.use(express.json()); // to support JSON-encoded bodies
+httpApp.use(express.urlencoded()); // to support URL-encoded bodies
+httpApp.use(express.methodOverride());
+httpApp.use(httpApp.router);
+httpApp.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
@@ -69,15 +78,10 @@ server.listen(app.get('port'), function(err, result) {
 });
 
 // set up plain http server
-var http = express.createServer();
-
-// set up a route to redirect http to https
-http.get('*',function(req,res){  
-    res.redirect('https://freemarketlite.cc'+req.url)
-})
+var redirect = http.createServer(httpApp);
 
 // have it listen on 80
-http.listen(80);
+redirect.listen(80);
 
 
 /**
@@ -93,6 +97,9 @@ app.get('/listitem', function(req, res) {
     res.render('listitem');
 });
 
+httpApp.get('*', function(req, res) {
+    res.redirect('https://www.freemarketlite.cc'+req.url)
+});
 
 
 
