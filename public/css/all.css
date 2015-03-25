@@ -1,0 +1,20 @@
+img {
+        max - width: 70 % ;
+        max - height: 70 % ;
+    }
+
+dl {
+    width: 100 % ;
+    overflow: hidden;
+
+}
+dt {
+    float: left;
+    width: 50 % ; /* adjust the width; make sure the total of both is 100% */
+
+}
+dd {
+    float: left;
+    width: 50 % ; /* adjust the width; make sure the total of both is 100% */
+
+} 

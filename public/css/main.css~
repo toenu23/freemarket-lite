@@ -1,0 +1,251 @@
+p{
+	text-align:center;
+	vertical-align:middle;
+}
+
+body{
+
+	background-color:white;
+	width:auto !important;
+	width:500px;
+	
+
+}
+
+li{
+	text-align:left;
+}
+
+
+.about-text{
+
+
+}
+
+.team-image{
+	margin-top:20px !important;
+}
+
+.team-desc{
+	display: inline-block !important;
+	text-align: left !important;
+	vertical-align: middle !important;
+	margin-top:100px;
+}	
+
+#team_section{
+	text-align:left;
+}
+
+#wronginfo{
+	color: rgb(255,0,0);
+}
+
+.carousel{
+  position: absolute;
+  left: 0;
+  min-width: 100%;
+  display:block;
+}
+
+.table-responsive {
+word-wrap: break-word;	
+/*overflow: auto !important;*/
+}
+
+
+ .transparent{
+	margin-top:-20px;
+    border-width: 0px;
+    -webkit-box-shadow: 0px 0px;
+    box-shadow: 0px 0px;
+	background: rgba(0, 0, 0, 0.4) !important;
+	background-image:none;
+	top:15px !important;
+	position:fixed;
+}
+
+#nav-logo {
+	max-width:160%;
+	max-height:160%;
+	padding-bottom:20px;
+	vertical-align:middle;
+	position:relative;
+}
+
+.navbar-collapse.collapsing,
+.navbar-collapse.in {
+  background: rgba(0, 0, 0, 1) !important;
+  min-width:120% !important;
+  position:relative;
+}
+
+
+
+.banner {
+
+	display:inline;
+	min-width:100%;
+	width:auto !important;
+	position:relative;
+	display:block;
+}
+
+#banner-img{
+	margin-top:30px;
+	min-height:50px !important;
+}
+
+.header{
+	margin: -70px 0 0 0 !important;
+	display:block;
+	min-width:100%;
+	position:relative;
+	display:block;
+}
+
+.footer{
+	bottom:0;
+}
+
+/*SECTIONS*/
+
+/*About Section*/
+table{
+	
+	border:none;
+	cellpadding:0;
+	cellspacing:0;
+}
+
+td{
+	max-width:500px;
+
+}
+#about_section{
+	margin-top:30px;
+	margin-bottom:100px;
+}
+
+#about_logo{
+	width:20%;
+	height:auto%;
+}
+
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+/* Styles */
+
+p{
+	word-wrap: break-word;
+	clear:right;
+	margin-top:10px;
+	font-size: 12px;
+
+}
+
+.about_par{
+	margin: 20px 5% 5% 5%;
+}
+}
+@media only screen
+and (min-device-width: 481px){
+.about_par{
+	margin: 20px 20% 5% 20%;
+}
+
+}
+
+
+
+#about_second_par{
+	margin-top:30px;
+	clear:left;
+	vertical-align: text-top;
+}
+
+#par-2{
+	margin-top:-50px;
+}
+
+
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+/* Styles */
+#pod_img {
+	clear:left;
+	margin-left:25px !important;
+	width:100%;
+	height:auto;
+}
+}
+
+
+@media only screen
+and (min-device-width:1001px) {
+#pod_img {
+	margin-left:40%;
+	width:300px;
+	height:auto;
+	margin-bottom:10%;
+}
+
+.about_text{
+	clear:right;
+	text-align:justify;
+	word-wrap:break-word;
+	overflow:auto;
+	margin-left:15%;
+}
+
+
+}
+@media only screen
+and (min-device-width:481px) 
+and (max-device-width:1000px{
+
+#pod_img {
+	
+	margin-left:0 !important;
+	width:50%;
+	height:auto;
+}
+
+}
+/*News Section*/
+#news_section{
+	margin-top:30px;
+	margin-bottom:100px;
+}
+
+/*Purchase Section*/
+
+#purchase_section{
+	margin-top:30px;
+	margin-bottom:100px;
+}
+
+/*Contact Section*/
+
+#contact_section{
+	margin-top:30px;
+	margin-bottom:100px;
+}
+
+#team_section{
+	margin-top:30px;
+	margin-bottom:100px;
+}
+
+}
+
+
+
+
+
