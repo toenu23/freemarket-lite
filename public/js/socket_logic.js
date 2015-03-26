@@ -1,5 +1,5 @@
     //production
-	var socket = io.connect('https://freemarketlite.com:443', { secure: true });
+	var socket = io.connect('https://www.freemarketlite.cc:443', { secure: true });
 	//local
 	//var socket = io.connect('http://127.0.0.1:8080');
 

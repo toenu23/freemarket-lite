@@ -6,7 +6,7 @@ isNumeric = function(obj) {
 $(document).ready(function() {
     console.log('in socket_listitem and ready');
     $('#submit').show();
-    var socket = io.connect('https://freemarketlite.com:443', {
+    var socket = io.connect('https://www.freemarketlite.cc:443', {
         secure: true
     });
     var errors = [];

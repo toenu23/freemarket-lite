@@ -347,7 +347,7 @@ io.sockets.on('connection', function(socket) {
                 console.log(JSON.stringify(data) + JSON.stringify(account));
                 account.balance = Number(JSON.parse(data).balanceNQT) * 100000000;
                 console.log("\n\nbalance is: " + Number(account.balance * 100000000) + "\nfinal price: " + Number(Number(buyData.finalPrice) + Number(400000000)) + "\n");
-                if (Number(Number(account.balance) * 100000000) >= Number(Number(buyData.finalPrice) + 400000000)) { //enough balance, initiate buy
+                if (Number(Number(account.balance) * 100000000) >= Number(Number(buyData.finalPrice) + 100000000)) { //enough balance, initiate buy
 
 
 
@@ -390,7 +390,7 @@ io.sockets.on('connection', function(socket) {
                         } else { //was successful! :)
 
                             // Configure the send nxt request
-                            options = {
+                            /*options = {
                                 url: 'http://127.0.0.1:7876/nxt',
                                 method: 'POST',
                                 headers: headers,
@@ -410,7 +410,7 @@ io.sockets.on('connection', function(socket) {
 
                                 fs.appendFile('./log', '\n\nsend fee returns:' + JSON.stringify(data));
 
-                            }); //nxtApi() send fee callback	
+                            }); //nxtApi() send fee callback	*/
 
                             socket.emit('buyItemResult', {
                                 query_status: 'good',

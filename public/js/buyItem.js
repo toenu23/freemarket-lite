@@ -75,7 +75,7 @@ function buyItem(data){
                 bootbox.confirm('Id: ' + listing_id + 
 				'<br />Shipping Method: ' + shipping.shippingMethod + 
 				'<br />Delivery Address: '+ shippingAddress + 
-				'<br />Final Price (with 3 NXT FreeMarketLite fee): ' + (finalPrice+300000000)/100000000 + ' NXT', 
+				'<br />Final Price: ' + finalPrice/100000000 + ' NXT', 
 				function(confirm){
 				if(confirm)
 					socket.emit('buyItem', {

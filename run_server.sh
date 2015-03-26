@@ -1,5 +1,9 @@
 #!/bin/sh
 
-./nxt/run.sh &
-./fmcore/run_core.sh &
+cd nxt
+./run.sh &
+cd ..
+cd fmcore
+./run_core.sh &
+cd ..
 node ./freemarket-lite/app.js
