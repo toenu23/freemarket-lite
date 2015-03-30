@@ -1,8 +1,20 @@
+var debug = false;
+var socket = undefined;
+
 $(document).ready(function(){
 
-		$('#listing_head').hide();
-		var socket = io.connect('https://localhost:443', {secure: true});
-		var all_data = {};
+  $('#listing_head').hide();
+
+  if(debug)
+  {
+    socket = io.connect('http://127.0.0.1:8008');
+  }
+  else
+  {
+    socket = io.connect('https://www.freemarketlite.cc:443', { secure: true });
+  }
+  
+  var all_data = {};
 
         //server sent a new list of all items for sale
 		socket.on('updateListings', function(data){

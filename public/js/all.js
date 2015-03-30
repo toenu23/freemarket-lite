@@ -56,6 +56,13 @@ $('.category').click(function(e) {
 
 $(document).ready(function() {
     console.log('all ready');
+	
+	$('#testBtn').on('click', function() {
+		
+		alert('clicked');
+		
+	});
+	
 	$('table tbody').on('click', 'tr', function() {
 
         $('#show_listing_div').empty();
@@ -84,7 +91,7 @@ $(document).ready(function() {
 			$('#show_listing_table').append('<tr><td>Title</td><td>' + all_data[index].item_title + '</td></tr>');
 			$('#show_listing_table').append('<tr><td>Description</td><td>' + all_data[index].item_description + '</td></tr>');
 			$('#show_listing_table').append('<tr><td>Price</td><td>' + Number(all_data[index].price) / 100000000 + ' NxT</td></tr>');
-			$('#show_listing_table').append('<tr><td>Seller ID</td><td>' + all_data[index].seller_id + '</td></tr>');
+			$('#show_listing_table').append('<tr><td>Seller ID</td><td><a href=\"/ratings/'+ all_data[index].seller_id +'\">' + all_data[index].seller_id + '</a></td></tr>');
 			$('#show_listing_table').append('<tr><td>Category</td><td>' + all_data[index].category1 + '</td></tr>');
 			$('#show_listing_table').append('<tr><td>Quantity</td><td>' + all_data[index].quantity + '</td></tr>');
 			$('#show_listing_table').append('<tr><td>Item Status</td><td>' + all_data[index].item_status + '</td></tr>');

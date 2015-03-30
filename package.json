@@ -9,6 +9,8 @@
     "body-parser": "~1.9.2",
     "ejs": "0.8.5",
     "express": "3.4.8",
+	"socket.io":"*",
+	"request":"*",
     "supervisor": "^0.6.0"
   }
 }

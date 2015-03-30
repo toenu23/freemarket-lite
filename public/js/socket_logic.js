@@ -1,10 +1,17 @@
-    //production
-	var socket = io.connect('https://www.freemarketlite.cc:443', { secure: true });
-	//local
-	//var socket = io.connect('http://127.0.0.1:8080');
+//production
+var debug = false;
+var socket = undefined;
 
 $(document).ready(function() {
-console.log('socket_logic ready');
+  console.log('socket_logic ready');
+  if(debug)
+  {
+    socket = io.connect('http://127.0.0.1:8008');
+  }
+  else
+  {
+    socket = io.connect('https://www.freemarketlite.cc:443', { secure: true });
+  }
 
 	socket.on('updateListings', function(data) {
         if (data.message.errno) {

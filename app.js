@@ -4,6 +4,15 @@
 /**
  * Module dependencies.
  **/
+debug = false;
+
+var nxtHost = "http://127.0.0.1";
+var nxtPort = 7876;
+var fmUrl = "http://127.0.0.1:17776/nxtpass";
+
+if(debug) nxtPort = 6876;
+var nxtUrl = nxtHost + ":" + nxtPort + "/nxt";
+
 var express = require('express');
 var https = require('https');
 var http = require('http');
@@ -11,9 +20,14 @@ var path = require('path');
 var request = require('request');
 var fs = require('fs');
 
+var mongode = require('mongode');
+var db = mongode.connect("mongodb://127.0.0.1:27017/test");
+
 var app = express();
 var httpApp = express();
 
+var rateUser = require('./routes/rateUser.js');
+var getRating = require('./routes/getRating.js');
 
 var bodyParser = require('body-parser')
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -22,7 +36,11 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 // ssl cert
-var sslOptions = {
+var sslOptions = {};
+
+if(!debug)
+{
+  sslOptions = {
     key: fs.readFileSync(__dirname + '/../ssl/freemarketlite.key'),
     cert: fs.readFileSync(__dirname + '/../ssl/freemarketlite_cc.crt'),
     ca: [
@@ -30,13 +48,17 @@ var sslOptions = {
         fs.readFileSync(__dirname + '/../ssl/COMODORSAAddTrustCA.crt'),
         fs.readFileSync(__dirname + '/../ssl/COMODORSADomainValidationSecureServerCA.crt')
     ],
+	
     requestCert: true,
     rejectUnauthorized: false
-};
+  };
+}
 
 
 // all environments
 app.set('port', process.env.PORT || 443); //std https port
+if(debug) app.set('port', process.env.PORT || 8008); //std http port
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.favicon());
@@ -48,7 +70,7 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // all environments
-httpApp.set('port', process.env.PORT || 80); //std http port
+httpApp.set('port', process.env.PORT || 8008); //std http port
 httpApp.use(express.favicon());
 httpApp.use(express.logger('dev'));
 httpApp.use(express.json()); // to support JSON-encoded bodies
@@ -61,13 +83,26 @@ httpApp.use(express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
-console.log('Welcome to NxT FreeMarket Browser!');
+console.log('Welcome to NxT FreeMarket Lite Browser!');
+
+/*
+* database
+**/
+var rating_db = db.collection("rating_db");
 
 /**
  *Create Server and router
  **/
 
-var server = https.createServer(sslOptions, app);
+var server = undefined;
+if(debug)
+{
+  server = http.createServer(app);
+}
+else
+{
+  server = https.createServer(sslOptions,app);
+}
 
 //start socket.io
 var io = require('socket.io').listen(server);
@@ -77,11 +112,14 @@ server.listen(app.get('port'), function(err, result) {
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-// set up plain http server
-var redirect = http.createServer(httpApp);
+if(!debug)
+{
+  // set up plain http server
+  var redirect = http.createServer(httpApp);
 
-// have it listen on 80
-redirect.listen(80);
+  // have it listen on 80
+  redirect.listen(80);
+}
 
 
 /**
@@ -96,6 +134,19 @@ app.get('/', function(req, res) {
 app.get('/listitem', function(req, res) {
     res.render('listitem');
 });
+
+app.get('/ratings/:addr', function(req, res) {
+	    res.render("ratings", {address: req.params.addr});
+});
+
+app.get('/purchases', function(req, res) {
+    res.render('myPurchases');
+});
+
+app.get('/rateSeller/:addr/:item/:listing_id', function(req,res){
+	res.render('rateSeller', { address: req.params.addr, item_title: req.params.item, listing_id: req.params.listing_id });
+});
+
 
 httpApp.get('*', function(req, res) {
     res.redirect('https://www.freemarketlite.cc'+req.url)
@@ -134,7 +185,7 @@ var headers = {
 
 // Configure the request
 var options = {
-    url: 'http://127.0.0.1:17776/nxtpass',
+    url: fmUrl,
     method: 'POST',
     headers: headers,
     form: {
@@ -158,6 +209,7 @@ var sleepTime = 60 * 1000;
 
 //Infinite loop to update all clients every minute with latest listings.
 var updateLoop = function(callback) {
+	console.log("in update loop");
     getAllListings(function(data) {
         if (data.errno) {
             io.sockets.emit('updateListings', {
@@ -216,7 +268,7 @@ io.sockets.on('connection', function(socket) {
 
             // Configure the request
             var options = {
-                url: 'http://127.0.0.1:17776/nxtpass',
+                url: fmUrl,
                 method: 'POST',
                 headers: headers,
                 form: data
@@ -255,12 +307,12 @@ io.sockets.on('connection', function(socket) {
         //END OF LIST NEW ITEM
     });
 
-
+	
     socket.on('login', function(password) {
         var account = {};
         // Configure the request
         var nxtOptions = {
-            url: 'http://127.0.0.1:7876/nxt',
+            url: nxtUrl,
             method: 'POST',
             headers: headers,
             form: {
@@ -273,7 +325,7 @@ io.sockets.on('connection', function(socket) {
             account.accountRS = data.accountRS;
             account.account = data.account;
             nxtOptions = {
-                url: 'http://127.0.0.1:7876/nxt',
+                url: nxtUrl,
                 method: 'POST',
                 headers: headers,
                 form: {
@@ -299,7 +351,7 @@ io.sockets.on('connection', function(socket) {
         var id = String(data.listing_id);
         // Configure the request
         var options = {
-            url: 'http://127.0.0.1:17776/nxtpass',
+            url: fmUrl,
             method: 'POST',
             headers: headers,
             form: {
@@ -322,20 +374,23 @@ io.sockets.on('connection', function(socket) {
         var account = {};
         // Configure the request
         var nxtOptions = {
-            url: 'http://127.0.0.1:7876/nxt',
+            url: nxtUrl,
             method: 'POST',
             headers: headers,
             form: {
                 requestType: "getAccountId",
                 secretPhrase: buyData.usersSecretPhrase
             }
-        }
+        };
+
+        console.log('url: ' + nxtUrl);
+
         nxtApi(nxtOptions, function(data) {
             data = JSON.parse(data);
             account.accountRS = data.accountRS;
             account.account = data.account;
             nxtOptions = {
-                url: 'http://127.0.0.1:7876/nxt',
+                url: nxtUrl,
                 method: 'POST',
                 headers: headers,
                 form: {
@@ -364,7 +419,7 @@ io.sockets.on('connection', function(socket) {
                     // Configure the buy request
 
                     var options = {
-                        url: 'http://127.0.0.1:17776/nxtpass',
+                        url: fmUrl,
                         method: 'POST',
                         headers: headers,
                         form: {
@@ -439,9 +494,142 @@ io.sockets.on('connection', function(socket) {
     });
 
     /////////END BUY
+	
+	socket.on('getPurchases', function(data){
 
+		//configure the request
+		var options = {
+			url: fmUrl,
+			method: 'POST',
+			headers: headers,
+			form: {
+			requestType: "own_purchases",
+			usersSecretPhrase: data.secret
+         }
+
+        }
+		console.log("about to call getpurchases");
+        nxtApi(options, function(data) { //get my purchases
+			console.log("getpurchases returned " + JSON.stringify(data));
+			socket.emit('getPurchasesResult', data);
+		});					
+							
+
+		
+	});
+	
+	
+	////////FMLite Reputation System
+	
+	socket.on('rateSeller', function(seller){
+		console.log(JSON.stringify(seller));
+		/*
+			1. check if seller has already been rated for this listing_id
+							   actually sold this item
+							   item is actually sold already
+			2. check if rater actually bought this listing
+		*/
+	console.log(seller.address + seller.listing_id + seller.stars + seller.item_title + seller.secret);	
+		if(seller.feedback.length > 10 && seller.address != "" && seller.item_title != "" && seller.stars != "" && seller.secret != ""){
+			console.log('SELLER FEEDBACK LENGTH:' + seller.feedback.length);
+			rating_db.findOne({ address: seller.address, listing_id: seller.listing_id }, function (err, item) { //1. see if seller has already been rated for this item
+			if(err){
+				console.log('error doing db lookup: ' + err);
+				socket.emit('rateSellerResponse', {result: err});
+			}
+			else if(item){
+				console.log("item has already been rated");
+				socket.emit('rateSellerResponse', {result: "This item has already been rated"});
+			}
+			else{
+				//console.log('no errors finding seller address. ' + JSON.stringify(objects));
+						
+						//    check if seller really sold this item and its status is 'Sold'
+						// Configure the request
+						var options = {
+							url: fmUrl,
+							method: 'POST',
+							headers: headers,
+							form: {
+								requestType: "searchSingleItem",
+								listing_id: seller.listing_id.toString()
+							}
+						}
+
+						nxtApi(options, function(data) {
+							data = JSON.parse(data);
+							console.log("seller: " + data.seller_id + " status: " + data.item_status);
+							if(data.seller_id == seller.address && data.item_status == "Sold"){
+								// All good up to this point. now number 2 (confirm the buyer did indeed purchase this item)
+								console.log("Seller " + seller.address + " has not already been rated for listing " + seller.listing_id + " and its status is 'Sold'." );
+
+								//configure the request
+								var options = {
+									url: fmUrl,
+									method: 'POST',
+									headers: headers,
+									form: {
+									requestType: "own_purchases",
+									usersSecretPhrase: seller.secret
+									}
+								}
+								nxtApi(options, function(purchases) { //get buyer's purchases
+									purchases = JSON.parse(purchases);
+									if(purchases.query_status == "bad"){
+										socket.emit('rateSellerResponse', {result: purchases.errorDescription } );
+									}
+									else {
+									var bought = 0;
+									for(var i=0; i < purchases.items.length; i++)
+										if(purchases.items[i].listing_id == seller.listing_id)
+											bought = 1;
+									if(bought == 1){
+										//Done Checking. Able to Rate Seller! :)
+										console.log("ready!");
+										
+										rateUser.rateUser(seller.address, seller.feedback, seller.stars, seller.listing_id, seller.item_title, function(result){
+											console.log("rated seller. Result: " + JSON.stringify(result));
+											socket.emit('rateSellerResponse', result);
+										});
+										
+										
+										
+										
+										
+										
+										
+										
+									}
+									else //unable to rate seller
+										socket.emit('rateSellerResponse', {result: "You did not purchase this listing"});
+									}
+										
+								});		
+								
+							}
+							else
+								socket.emit('rateSellerResponse', {result: "The specified account did not sell this item or it is not yet sold."});
+		
+						}); //nxtApi() getbalance callback
+						
+				}
+			});
+		} else{
+			socket.emit('rateSellerResponse', {result: "Please enter a feedback of more than 10 characters and a valid secret key"});
+		}
+
+	}); //End rateSeller
+	
+	socket.on('getRatings', function(seller){
+		getRating.getRating(seller.address, function(data){
+				socket.emit('getRatingsResult', data);
+		});
+	}); //End getRatings
+	//END FMLITE REPUTATION SYSTEM
+	
 }); //io.sockets.on('connection')
 
+////END SOCKET.IO
 
 
 /**
@@ -449,7 +637,7 @@ io.sockets.on('connection', function(socket) {
  **/
 
 
-//Return Json-formatted string of all current FreeMarket listings
+//Return JSON-formatted string of all current FreeMarket listings
 
 app.get('/all_listings', function(req, res) {
     res.send(listings);
