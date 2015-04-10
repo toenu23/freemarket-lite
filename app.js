@@ -4,7 +4,7 @@
 /**
  * Module dependencies.
  **/
-debug = true;
+debug = false;
 
 var nxtHost = "http://127.0.0.1";
 var nxtPort = 7876;
