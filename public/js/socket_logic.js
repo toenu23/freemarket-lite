@@ -1,5 +1,5 @@
 //production
-var debug = false;
+var debug = true;
 var socket = undefined;
 
 $(document).ready(function() {
@@ -76,6 +76,23 @@ $(document).ready(function() {
 
     });
 
+	    socket.on('singleItemBTC', function(data) {
+        data = JSON.parse(data);
+        initshapeShiftBTCBuy(data);
+
+    });
+	
+	socket.on('nxtaddrConfirm', function(data){
+		data = JSON.parse(data);
+		bootbox.dialog({
+			title: "NXT Account",
+			message:
+				"<b>NXT Address</b>: "
+				+ data.accountRS
+				+ "\n<br /><b>Public Key</b>: "
+				+ data.publicKey
+		});
+	});
 
     socket.on('buyItemResult', function(data) {
 

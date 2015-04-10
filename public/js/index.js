@@ -1,4 +1,4 @@
-var debug = false;
+var debug = true;
 var socket = undefined;
 
 $(document).ready(function(){

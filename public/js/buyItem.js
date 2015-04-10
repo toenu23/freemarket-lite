@@ -1,3 +1,40 @@
+
+function doshapeShiftBTC(data){
+	
+	$.ajax({
+  url: "https://shapeshift.io/rate/btc_nxt",
+})
+  .done(function( shapeRate ) {
+	  console.log(JSON.stringify(data));
+	var rate = shapeRate.rate;
+	//var btcPrice = parseFloat(listing.price/(100000000*rate)).toFixed(8);
+	//var nxtPrice = parseFloat(listing.price/(100000000)).toFixed(8);
+	var rs = data.accountRS;
+	var pubkey = data.publicKey;
+	$.post("https://shapeshift.io/shift",
+    {
+        withdrawal: rs,
+        pair: "btc_nxt",
+		rsAddress: pubkey
+    },
+    function(data, status){
+		
+        bootbox.dialog({
+			title: "ShapeShift.io Bitcoin to NXT conversion",
+			message: "Deposit any amount BTC to: <b>" + data.deposit + "</b><br />NXT will be sent to: <b>" + data.withdrawal + "</b><br />1 Bitcoin = <b>" + parseFloat(rate).toFixed(8) + "</b> NXT"   
+    });
+  
+  
+  }
+  ); //END ajax rate call
+
+  });
+
+    }
+
+	
+
+
 function buyItem(data){
 
   if(data.item_status == "Available"){

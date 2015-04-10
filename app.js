@@ -4,7 +4,7 @@
 /**
  * Module dependencies.
  **/
-debug = false;
+debug = true;
 
 var nxtHost = "http://127.0.0.1";
 var nxtPort = 7876;
@@ -344,7 +344,6 @@ io.sockets.on('connection', function(socket) {
     }); //socket.on('login')
 
 
-
     socket.on('get_listing', function(data) {
 
         console.log('get listing: ' + data.listing_id);
@@ -363,11 +362,30 @@ io.sockets.on('connection', function(socket) {
         nxtApi(options, function(data) {
             socket.emit('singleItem', data);
         }); //nxtApi() getbalance callback		
-
-
-
     });
 
+	
+	    socket.on('get_listing_BTC', function(data) {
+
+        console.log('get listing: ' + data.listing_id);
+        var id = String(data.listing_id);
+        // Configure the request
+        var options = {
+            url: fmUrl,
+            method: 'POST',
+            headers: headers,
+            form: {
+                requestType: "searchSingleItem",
+                listing_id: id.toString()
+            }
+        }
+
+        nxtApi(options, function(data) {
+            socket.emit('singleItemBTC', data);
+        }); //nxtApi() getbalance callback		
+    });
+	
+	
     ////////////BUY ITEM
     socket.on('buyItem', function(buyData) {
 
@@ -519,8 +537,35 @@ io.sockets.on('connection', function(socket) {
 	});
 	
 	
-	////////FMLite Reputation System
+	////FMLite Shapeshift.io Integration
 	
+	
+	    socket.on('getWithdrawalNXTAddr', function(data) {
+        // Configure the request
+        var options = {
+            url: nxtUrl,
+            method: 'POST',
+            headers: headers,
+            form: {
+                requestType: "getAccountId",
+                secretPhrase: data.secret
+            }
+        }
+        nxtApi(options, function(data) {
+            socket.emit('nxtaddrConfirm', data);
+        }); //nxtApi() setaccount callback		
+    });
+
+	
+	
+	
+	
+	
+	
+	
+	
+	////////FMLite Reputation System
+
 	socket.on('rateSeller', function(seller){
 		console.log(JSON.stringify(seller));
 		/*
@@ -529,6 +574,7 @@ io.sockets.on('connection', function(socket) {
 							   item is actually sold already
 			2. check if rater actually bought this listing
 		*/
+
 	console.log(seller.address + seller.listing_id + seller.stars + seller.item_title + seller.secret);	
 		if(seller.feedback.length > 10 && seller.address != "" && seller.item_title != "" && seller.stars != "" && seller.secret != ""){
 			console.log('SELLER FEEDBACK LENGTH:' + seller.feedback.length);
@@ -625,8 +671,9 @@ io.sockets.on('connection', function(socket) {
 				socket.emit('getRatingsResult', data);
 		});
 	}); //End getRatings
-	//END FMLITE REPUTATION SYSTEM
 	
+	//END FMLITE REPUTATION SYSTEM
+
 }); //io.sockets.on('connection')
 
 ////END SOCKET.IO
