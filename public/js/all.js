@@ -139,7 +139,8 @@ $(document).ready(function() {
 				NXT Address:<input type='text' id='address' /><br/>\
 				Public Key:<input type='text' id='pubkey' />\
         <script>$('#shapeshift-generate-account').on('click', function() {\
-          var public_key = converters.byteArrayToHexString(getPublicKey($('password').val()));\
+          console.log($('#password').val());\
+          var public_key = converters.byteArrayToHexString(getPublicKey($('#password').val()));\
           $('#pubkey').val(public_key);\
           $('#address').val(getAccountIdFromPublicKey(public_key, true));});</script>\
 				</form>", function(result) {
